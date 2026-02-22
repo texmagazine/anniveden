@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Jeu Mot de Passe Eden</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+  <!-- TÊTE DE LA CHÈVRE + BULLE -->
+  <div class="goat-head">
+    <img id="goatHead" src="passe/chevre/chevre1.png" alt="Tête de chèvre">
+
+    <!-- BULLE visible au début -->
+    <div id="speechBubble" class="speech-bubble">
+      Coucou EDEN, je m'appelle Miss BEEH ! Tu dois trouver le mot de passe. Je suis sûre que tu vas le trouver car tu es très forte !
+    </div>
+  </div>
+
+  <!-- FLASH + POUSSIÈRE -->
+  <div id="flash" class="flash-effect"></div>
+  <div id="dust" class="dust-effect"></div>
+
+  <!-- CONTAINER -->
+  <div class="login-box">
+
+    <h1>Jeu du mot de passe</h1>
+
+    <p class="subtitle">
+      <b>Tapes un mot dans le rectangle</b>
+    </p>
+
+    <form onsubmit="return checkPassword()">
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <button type="submit">Valider</button>
+    </form>
+
+    <p class="hint"></p>
+
+  </div>
+
+  <!-- SABOTS DE LA CHÈVRE -->
+  <div class="goat-feet">
+    <img id="goatFeet" src="passe/chevre/sabots1.png" alt="Sabots de chèvre">
+  </div>
+
+  <!-- SONS -->
+  <audio id="soundBeeh" src="passe/son/bee.mp3"></audio>
+  <audio id="soundRigolo" src="passe/son/rigolo.mp3"></audio>
+
+<script>
+
+let wrongIndex = 0;
+
+
+// Index pour la boucle des chèvres incorrectes
+let goatIndex = 0;
+const goatList = [2, 3, 4];
+
+function checkPassword() {
+
+  const goodPassword = "chevre";
+  const input = document.getElementById("password").value;
+
+  const head = document.getElementById("goatHead");
+  const feet = document.getElementById("goatFeet");
+  const bubble = document.getElementById("speechBubble");
+  const flash = document.getElementById("flash");
+  const dust = document.getElementById("dust");
+
+  const soundBeeh = document.getElementById("soundBeeh");
+  const soundRigolo = document.getElementById("soundRigolo");
+
+  /* MOT DE PASSE CORRECT */
+  // Normalisation : minuscules + suppression des accents
+const normalized = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+if (normalized === goodPassword) {
+
+
+
+    soundRigolo.currentTime = 0;
+    soundRigolo.play();
+
+    head.src = "passe/chevre/chevre1.png";
+    feet.src = "passe/chevre/sabots1.png";
+
+    bubble.textContent = "Bêêêh bravo... Tu as trouvé le mot de passe EDEN !";
+    bubble.style.display = "block";
+
+    bubble.classList.remove("pop");
+    void bubble.offsetWidth;
+    bubble.classList.add("pop");
+
+    flash.classList.remove("flashGo");
+    void flash.offsetWidth;
+    flash.classList.add("flashGo");
+
+    dust.classList.remove("dustGo");
+    void dust.offsetWidth;
+    dust.classList.add("dustGo");
+
+    setTimeout(() => {
+      window.location.href = "clic/index.html";
+    }, 3000);
+
+    return false;
+  }
+
+  /* MOT DE PASSE INCORRECT */
+
+  soundBeeh.currentTime = 0;
+  soundBeeh.play();
+
+  const wrongMessages = [
+    "Bêêê... Ce n'est pas le bon mot de passe, mais je te donne un indice : il commence par un C",
+    "Pas le mot de passe là non plus, je t'aide : la deuxième lettre est un H",
+    "Mauvais mot de passe : on dirait que tu tapes au hasard... le mot est un animal",
+    "Ahah, joli essai... mais non, ce n'est pas le mot de passe. L'animal a des cornes",
+    "Oups... ce n'est pas le bon mot de passe. L'animal fait BEEH, alors c'est lequel ?"
+  ];
+
+
+  bubble.textContent = wrongMessages[wrongIndex];
+
+// passer à l’indice suivant
+wrongIndex = (wrongIndex + 1) % wrongMessages.length;
+
+  
+  bubble.style.display = "block";
+
+
+
+
+
+  /* Animation POP */
+  bubble.classList.remove("pop");
+  void bubble.offsetWidth;
+  bubble.classList.add("pop");
+
+  /* Animation TREMBLEMENT */
+  bubble.classList.remove("shake");
+  void bubble.offsetWidth;
+  bubble.classList.add("shake");
+
+  flash.classList.remove("flashGo");
+  void flash.offsetWidth;
+  flash.classList.add("flashGo");
+
+  dust.classList.remove("dustGo");
+  void dust.offsetWidth;
+  dust.classList.add("dustGo");
+
+  /* Chèvre suivante */
+  goatIndex = (goatIndex + 1) % goatList.length;
+  const current = goatList[goatIndex];
+
+  head.src = "passe/chevre/chevre" + current + ".png";
+  feet.src = "passe/chevre/sabots" + current + ".png";
+
+  return false;
+}
+
+</script>
+
+</body>
+</html>
