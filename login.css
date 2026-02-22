@@ -1,0 +1,204 @@
+/* ---------------------------------------------------
+   FOND PRAIRIE
+--------------------------------------------------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+
+  background-image: url("passe/image/prairie.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.subtitle span {
+  display: block;
+}
+
+/* ---------------------------------------------------
+   CONTAINER DU JEU
+--------------------------------------------------- */
+.login-box {
+  position: relative;
+  width: 420px;        /* plus large */
+  margin: 220px auto 0 auto;
+  padding: 40px;       /* plus d’espace intérieur */
+  background: rgba(224, 221, 12, 0.92);
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+  text-align: center;
+  z-index: 5;
+}
+
+/* ---------------------------------------------------
+   TÊTE DE LA CHÈVRE
+--------------------------------------------------- */
+.goat-head {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  z-index: 4;
+}
+
+.goat-head img {
+  width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------
+   SABOTS
+--------------------------------------------------- */
+.goat-feet {
+  position: absolute;
+  top: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  z-index: 6;
+}
+
+.goat-feet img {
+  width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------
+   BULLE DE DIALOGUE (attachée à la tête)
+--------------------------------------------------- */
+/* BULLE DE DIALOGUE (plus longue, moins haute, bien placée) */
+.speech-bubble {
+  position: absolute;
+  top: -25px;
+  left: 100%;
+  margin-left: 30px;
+
+  width: 320px;
+  min-height: 60px;
+  padding: 15px 20px;
+
+  background: #ffffff;
+  border: 4px solid #000;
+  border-radius: 40px;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+
+  display: block;   /* visible au début */
+  z-index: 10;
+
+  box-shadow: 4px 4px 0px #000;
+}
+
+/* Pointe cartoon */
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: -18px;
+
+  width: 22px;
+  height: 22px;
+  background: #ffffff;
+  border: 4px solid #000;
+  border-radius: 50%;
+  box-shadow: 3px 3px 0px #000;
+}
+
+
+/* Pointe de la bulle */
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: -15px;
+  width: 0;
+  height: 0;
+  border-right: 15px solid white;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  filter: drop-shadow(-2px 0px 0px black);
+}
+
+/* ---------------------------------------------------
+   ANIMATION POP (bonne réponse)
+--------------------------------------------------- */
+@keyframes popAnim {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.speech-bubble.pop {
+  animation: popAnim 0.3s ease-out;
+}
+
+/* ---------------------------------------------------
+   ANIMATION TREMBLEMENT (mauvaise réponse)
+--------------------------------------------------- */
+@keyframes shakeBubble {
+  0% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-3px) rotate(-3deg); }
+  40% { transform: translateX(3px) rotate(3deg); }
+  60% { transform: translateX(-2px) rotate(-2deg); }
+  80% { transform: translateX(2px) rotate(2deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+
+.speech-bubble.shake {
+  animation: shakeBubble 0.4s ease-in-out;
+}
+
+/* ---------------------------------------------------
+   FLASH & POUSSIÈRE (si tu les ajoutes)
+--------------------------------------------------- */
+.flash-effect,
+.dust-effect {
+  position: absolute;
+  pointer-events: none;
+  display: none;
+}
+
+.flashGo {
+  display: block;
+  animation: flashAnim 0.4s ease-out;
+}
+
+@keyframes flashAnim {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.dustGo {
+  display: block;
+  animation: dustAnim 0.6s ease-out;
+}
+
+@keyframes dustAnim {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+
+input[type="password"] {
+  width: 80%;
+  padding: 14px 18px;        /* plus épais */
+  font-size: 1.2em;
+  border: 4px solid #000;    /* contour plus marqué */
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 3px 3px 0px #000; /* effet BD */
+  margin-bottom: 20px;
+}
+
+
+button {
+  padding: 12px 20px;
+  font-size: 1.1em;
+  border: 3px solid #000;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px #000;
+}
