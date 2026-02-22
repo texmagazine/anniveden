@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Jeu Clic Eden</title>
+
+<style>
+    html, body {
+        margin: 0;
+        overflow: hidden;
+        background: url("image/prairie.jpg") center/cover no-repeat fixed;
+        font-family: Arial, sans-serif;
+        overscroll-behavior: none;
+        touch-action: none;
+    }
+
+    #zoneJeu {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        z-index: 3;
+    }
+
+    .ballon {
+        position: absolute;
+        width: 120px;
+        cursor: pointer;
+        user-select: none;
+        filter: drop-shadow(0 0 12px rgba(255, 255, 200, 0.9));
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0% { filter: drop-shadow(0 0 6px rgba(255,255,200,0.6)); }
+        50% { filter: drop-shadow(0 0 18px rgba(255,255,200,1)); }
+        100% { filter: drop-shadow(0 0 6px rgba(255,255,200,0.6)); }
+    }
+
+    #grattage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        z-index: 15;
+        border-radius: 20px;
+        pointer-events: all;
+        background: rgba(0,0,0,0.001);
+    }
+
+    #introScreen {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+    }
+
+    #introBox {
+        background: rgb(169, 196, 16);
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 1.2rem;
+        color: #333;
+        max-width: 90%;
+    }
+
+    #startBtn {
+        margin-top: 20px;
+        padding: 10px 25px;
+        font-size: 1.4rem;
+        border: none;
+        border-radius: 10px;
+        background: #045a1a;
+        color: white;
+        cursor: pointer;
+    }
+
+#videoPopup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+#videoBox {
+    background: #fff;
+    padding: 10px;
+    border-radius: 12px;
+    width: 90vw;       /* Largeur du popup */
+    max-width: 1200px; /* Taille max sur grand écran */
+}
+
+#videoAnniv {
+    width: 100%;       /* La vidéo occupe toute la largeur du popup */
+    height: auto;
+    border-radius: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="introScreen">
+    <div id="introBox">
+        <h1>Maitenant EDEN, il faut que tu cliques 5 fois sur une tête de chèvre</h1>
+        <button id="startBtn">Commencer</button>
+    </div>
+</div>
+
+<audio id="bravoSon" src="son/bravo.mp3"></audio>
+<audio id="plocSon" src="son/ploc.mp3"></audio>
+<audio id="beehSon" src="son/bee.mp3"></audio>
+<audio id="gratteSon" src="son/grattage.mp3"></audio>
+
+
+<div id="zoneJeu"></div>
+
+<canvas id="grattage" width="320" height="180"></canvas>
+
+<div id="videoPopup">
+    <div id="videoBox">
+        <video id="videoAnniv" controls autoplay muted>
+            <source src="video/anniv.mp4" type="video/mp4">
+        </video>
+    </div>
+</div>
+
+<script>
+let zone = document.getElementById("zoneJeu");
+let ballonsRestants = 5;
+
+document.getElementById("startBtn").addEventListener("click", () => {
+    document.getElementById("introScreen").style.display = "none";
+
+    for (let i = 0; i < ballonsRestants; i++) {
+        creerBallon();
+    }
+});
+
+function creerBallon() {
+    let b = document.createElement("img");
+    b.src = "image/chevre.png";
+    b.classList.add("ballon");
+    b.style.left = Math.random() * (window.innerWidth - 80) + "px";
+    b.style.top = window.innerHeight + "px";
+    b.isExploded = false;
+
+    zone.appendChild(b);
+
+    let vitesse = 3 + Math.random() * 2;
+
+    function monter() {
+        let y = parseFloat(b.style.top);
+        b.style.top = (y - vitesse) + "px";
+
+        if (y < -100) {
+            if (!b.isExploded) {
+                b.remove();
+                creerBallon();
+            } else {
+                b.remove();
+            }
+        } else {
+            requestAnimationFrame(monter);
+        }
+    }
+    monter();
+
+    b.addEventListener("click", () => {
+        let sonPloc = document.getElementById("beehSon");
+        sonPloc.currentTime = 0;
+        sonPloc.play();
+
+        b.isExploded = true;
+        b.remove();
+        ballonsRestants--;
+
+       if (ballonsRestants === 0) {
+    setTimeout(() => {
+        document.getElementById("messageBravo").style.display = "flex";
+    }, 500);
+}
+
+document.getElementById("btnGratter").addEventListener("click", () => {
+    document.getElementById("messageBravo").style.display = "none";
+    activerGrattage();
+});
+
+
+
+
+
+    });
+}
+
+function activerGrattage() {
+    let canvas = document.getElementById("grattage");
+    let ctx = canvas.getContext("2d");
+    canvas.style.display = "block";
+
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#b5b5b5";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#888";
+    ctx.font = "18px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Gratte pour révéler ta surprise !", canvas.width / 2, canvas.height / 2);
+
+    let grattage = false;
+    let aGratte = false;
+    let fini = false;
+
+    let sonGratte = document.getElementById("gratteSon");
+    sonGratte.loop = true;
+
+    function gratter(x, y) {
+        aGratte = true;
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.beginPath();
+        ctx.arc(x, y, 20, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function pourcentageGratte(ctx, canvas) {
+        let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let total = pixels.data.length / 4;
+        let transparents = 0;
+
+        for (let i = 3; i < pixels.data.length; i += 4) {
+            if (pixels.data[i] === 0) transparents++;
+        }
+
+        return (transparents / total) * 100;
+    }
+
+    function stopGrattage() {
+        if (fini) return;
+
+        sonGratte.pause();
+        sonGratte.currentTime = 0;
+
+        if (!aGratte) return;
+
+        let pct = pourcentageGratte(ctx, canvas);
+
+        if (pct < 40) {
+            return;
+        }
+
+        fini = true;
+        finGrattage(canvas);
+    }
+
+    canvas.addEventListener("mousedown", () => {
+        grattage = true;
+        sonGratte.currentTime = 0;
+        sonGratte.play();
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+        if (!grattage) return;
+        let rect = canvas.getBoundingClientRect();
+        gratter(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener("mouseup", () => {
+        grattage = false;
+        stopGrattage();
+    });
+
+    canvas.addEventListener("touchstart", () => {
+        grattage = true;
+        sonGratte.currentTime = 0;
+        sonGratte.play();
+    });
+
+    canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        if (!grattage) return;
+        let rect = canvas.getBoundingClientRect();
+        gratter(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+    }, { passive: false });
+
+    canvas.addEventListener("touchend", () => {
+        grattage = false;
+        stopGrattage();
+    });
+}
+
+function finGrattage(canvas) {
+    canvas.style.display = "none";
+
+    let bravo = document.getElementById("bravoSon");
+    bravo.currentTime = 0;
+    bravo.play();
+
+    setTimeout(() => {
+        document.getElementById("videoPopup").style.display = "flex";
+        document.getElementById("videoAnniv").muted = false;
+        document.getElementById("videoAnniv").play();
+    }, 1000);
+}
+</script>
+
+<div id="messageBravo" style="
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 25;
+">
+    <div style="
+        background: #fff;
+        padding: 25px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 1.4rem;
+        max-width: 90%;
+        color: #333;
+    ">
+        <p><strong>BRAVO EDEN, tu as réussi le jeu !</strong></p>
+        <p>Maintenant gratte le rectangle pour voir ta surprise.</p>
+        <button id="btnGratter" style="
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            background: #045a1a;
+            color: white;
+            cursor: pointer;
+        ">D'accord !</button>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>
